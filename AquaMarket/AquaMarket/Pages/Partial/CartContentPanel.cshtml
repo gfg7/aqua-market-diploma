@@ -1,0 +1,204 @@
+﻿@using AquaMarket_DTO;
+@model Order
+@{
+    <input type="hidden" value="@Model?.Id" id="orderId">
+
+    <div class="row">
+        <div class="col-md-8 cart">
+
+            @if (Model?.WaterProducts?.Count == 0 && Model?.Contents?.Count == 0 || Model is null)
+            {
+                <div class="text-center" style="margin-top: 15%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" style="height: fit-content;width: 30%;filter: invert(1);opacity: 0.15;">
+                        <defs>
+                            <linearGradient id="a" x1="27.56" y1="17.64" x2="38.27" y2="36.19" gradientUnits="userSpaceOnUse">
+                                <stop offset="0" stop-color="#d4d7dd" />
+                                <stop offset="0.45" stop-color="#d4d7dd" />
+                                <stop offset="1" stop-color="#bec1c6" />
+                            </linearGradient>
+                            <linearGradient id="b" x1="19.96" y1="29.03" x2="31.37" y2="48.8" xlink:href="#a" />
+                        </defs>
+                        <path d="M43.64,20a5,5,0,1,1,3.61,8.46H11.75" fill="none" stroke-dasharray="35 22" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" stroke="url(#a)">
+                            <animate attributeName="stroke-dashoffset" values="-57; 57" dur="2s" repeatCount="indefinite" />
+                        </path>
+                        <path d="M29.14,44a5,5,0,1,0,3.61-8.46h-21" fill="none" stroke-dasharray="24 15" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" stroke="url(#b)">
+                            <animate attributeName="stroke-dashoffset" values="-39; 39" dur="2s" begin="-1.5s" repeatCount="indefinite" />
+                        </path>
+                    </svg>
+
+                    <p class="lead fs-5">Корзина пуста</p>
+                </div>
+            }
+
+            @if (Model?.WaterProducts?.Count > 0)
+            {
+                 <h1 class="fs-4 text display-4 border-bottom pb-3 pt-3 row main">Питьевая продукция</h1>
+                @foreach (var item in Model.WaterProducts)
+                {
+                    <div class="row border-bottom main mt-3 pb-3">
+                        <div class="row  align-items-center">
+                            <div class="col d-flex flex-column justify-content-between" style="text-align:left">
+                                <div class="d-flex justify-content-between">
+                                    <label class="mb-1 lead">@item?.WaterType.Title @item?.Volume л (@item?.PackageType?.Title)</label>
+                                    <div class="remove" id="@item?.Id" onclick="RemoveWater(this.id)" style="max-width:10%">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3 grow-ico " viewBox="0 0 16 16">
+                                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="col d-flex">
+                                    @{
+                                        var price = (decimal)(item?.PackageType?.AddToCost + item?.WaterType?.AddToCost);
+                                        if (item?.Volume < 0)
+                                        {
+                                            price *= Math.Abs(1 - item.Volume);
+                                        } else
+                                        {
+                                            price *= (decimal)item?.Volume;
+                                        }
+                                    }
+                                    <label class="mb-1">Цена: <span class="fw-bold">@price руб.</span></label>
+                                    <div class="col w-75" />
+                                    <div class="d-flex justify-content-between">
+                                        @if (item?.Count > 1)
+                                        {
+                                            <div id="@item?.Id" onclick="DecreaseCountWater(this.id)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle grow-ico " viewBox="0 0 16 16">
+                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
+                                                </svg>
+                                            </div>
+                                        }
+                                        <input type="text" class="text-center border-0" style="color: darkorange;font-weight: 600;width:2rem" disabled value="@item?.Count">
+                                        <div id="@item?.Id" onclick="AddCountWater(this.id)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle grow-ico " viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            @if (Model?.Contents?.Count > 0)
+            {
+                <h1 class="fs-4 text display-4 border-bottom pb-3 pt-3 row main">Товары</h1>
+                @foreach (var item in Model.Contents)
+                {
+                    <div class="row border-bottom main mt-3 pb-3">
+                        <div class="row  align-items-center">
+                            <div class="col-2">
+                                @{
+                                    string pic = item.Accessory.Article.Trim() + ".jpg";
+                                }
+                                <img class="img-fluid" src="~/accessory/@pic" onerror="this.onerror=null; this.src='https://dummyimage.com/450x300/dee2e6/6c757d.jpg'">
+                            </div>
+                            <div class="col d-flex flex-column justify-content-between ms-5" style="text-align:left">
+                                <div class="d-flex justify-content-between">
+                                    <label class="mb-1 lead">@item?.Accessory?.Title</label>
+                                    <div class="remove" id="@item?.Accessory?.Article" onclick="RemoveAccessory(this.id)" style="max-width:10%">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3 grow-ico " viewBox="0 0 16 16">
+                                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="col d-flex">
+                                    <label class="mb-1">Цена: <span class="fw-bold">@item?.Accessory?.Price руб.</span></label>
+                                    <div class="col w-75" />
+                                    <div class="d-flex justify-content-between">
+                                        @if (item?.Count > 1)
+                                        {
+                                            <div id="@item?.Accessory?.Article" onclick="DecreaseCountAccessory(this.id)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle grow-ico " viewBox="0 0 16 16">
+                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
+                                                </svg>
+                                            </div>
+                                        }
+                                        <input type="text" class="text-center border-0" style="color: darkorange;font-weight: 600;width:2rem" disabled value="@item?.Count">
+                                        <div id="@item?.Accessory?.Article" onclick="AddCountAccessory(this.id)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle grow-ico " viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-md-4 summary" style="text-align:left">
+            <div class="text-center">
+                <h5><b>Итог</b></h5>
+            </div>
+            <hr style="opacity:1">
+            @{
+                var position = Model?.Contents?.Count() + Model?.WaterProducts?.Count();
+                if (position is null)
+                    position = 0;
+            }
+            <div>Позиций: @position</div>
+            <div class="mb-2">Доставка:</div>
+            <select class="form-select form-select-sm mb-3" onchange="DeliveryOption(this.selectedIndex)">
+                <option class="text-muted" value="0" selected>Самовывоз</option>
+                <option class="text-muted" value="1">Курьер</option>
+            </select>
+            <div id="address" class="d-none">
+                <div class="pt-2">
+                    <div>Адрес:</div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend input-group-sm mb-3" style="height:2rem">
+                            <select class="form-select form-select-md mb-3 city">
+                            </select>
+                        </div>
+                        <input type="text" class="form-control" style="height:2rem" onchange="AdressCheck()" id="fullAddress">
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="padding: 2vh 0;">
+                <hr style="opacity:1">
+                @{
+                    decimal cost = 0;
+                    if (Model is not null)
+                    {
+                        var content = Model.Contents.Sum(x => x.Count * x.Accessory.Price);
+                        var waterCost = Model.WaterProducts.Sum(x =>
+                        {
+                            var v = x.Volume;
+                            if (v < 1)
+                            {
+                                v = Math.Abs(1 - x.Volume);
+                            }
+                            return v * (decimal)(x.WaterType.AddToCost + x.PackageType.AddToCost) * x.Count;
+                        });
+                        cost = content + waterCost;
+                    }
+                }
+                <div class="row">
+                    <div class="col">Сумма заказа:</div>
+                    <div class="col text-right"><span id="cost">@cost</span> руб.</div>
+                </div>
+                <div class="row">
+                    <div class="col">Стоимость доставки:</div>
+                    <div class="col" id="deliveryCost">Бесплатно</div>
+                </div>
+                <div class="row">
+                    <div class="col">Итоговая стоимость:</div>
+                    <div class="col text-right"><span id="fullCost">@cost</span> руб.</div>
+                </div>
+
+            </div>
+            @if (cost > 0)
+            {
+                <button class="btn btn-outline btn btn-outline-light" style="width: -webkit-fill-available;" onclick="Buy()" id="buy">Оформить</button>
+            }
+        </div>
+    </div>
+}

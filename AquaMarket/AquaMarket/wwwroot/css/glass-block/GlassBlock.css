@@ -1,0 +1,52 @@
+﻿.grow {
+    -webkit-transition: transform .5s;
+    -moz-transition: transform .5s;
+    -ms-transition: transform .5s;
+    -o-transition: transform .5s;
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, .5);
+    -webkit-transition: background-color .5s;
+    -moz-transition: background-color .5s;
+    -ms-transition: background-color .5s;
+    -o-transition: background-color .5s;
+    transition: background-color .5s;
+    color: white;
+    color: dimgray;
+}
+
+    .grow:hover {
+        -webkit-transition: transform .5s;
+        -moz-transition: transform .5s;
+        -ms-transition: transform .5s;
+        -o-transition: transform .5s;
+        -webkit-transform: scale(1.2);
+        -ms-transform: scale(1.2);
+        transform: scale(1.2);
+        background-color: rgba(255, 255, 255, 1);
+        -webkit-transition: background-color .5s;
+        -moz-transition: background-color .5s;
+        -ms-transition: background-color .5s;
+        -o-transition: background-color .5s;
+        transition: background-color .5s;
+    }
+
+div svg .grow {
+    height: fit-content;
+    width: 16px;
+    max-width:20px;
+    transform: none;
+    cursor:pointer;
+}
+
+        .grow:hover h5 {
+            color: darkorange;
+        }
+
+
+        .grow .descrip-title {
+            transition: all .5s;
+            margin-top: 0rem;
+        }

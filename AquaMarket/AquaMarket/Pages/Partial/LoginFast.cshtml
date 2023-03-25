@@ -1,0 +1,13 @@
+﻿@using AquaMarket_DTO
+@model AquaMarketWebFront.Pages.AuthModel
+@{
+     <form method="post" asp-page-handler="InFast" asp-page="/Auth" asp-anti-forgery="true" id="fastlogin">
+      <!-- Email input -->
+      <div class="form-outline mb-4">
+      <input type="email" asp-for="ClientEmail" name="ClientEmail" class="form-control" placeholder="Email"/>
+      </div>
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-outline-primary btn-block mb-4">Войти</button>
+    </form>
+}

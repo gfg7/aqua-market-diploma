@@ -1,0 +1,188 @@
+﻿@{
+    <!-- OrderDetail - change address -->
+    <div class="modal hide fade in " id="changeAddress" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeAddresslLabel">Изменение параметров доставки заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select form-select-sm mb-3" id="deliverySelect" onchange="DeliveryOption(this.selectedIndex)">
+                        <option class="text-muted" value="0" selected>Самовывоз</option>
+                        <option class="text-muted" value="1">Курьер</option>
+                    </select>
+                    <div id="address" class="d-none">
+                        <div class="pt-2">
+                            <p>Адрес:</p>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend input-group-sm mb-3" style="height:2rem">
+                                    <select class="form-select form-select-md mb-3" id="city">
+                                    </select>
+                                </div>
+                                <input type="text" class="form-control" style="height:2rem" onchange="AdressCheck()" id="fullAddress">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-outline-success" id="saveAddress" onclick="UpdateAddress()">Сохранить изменения</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OrderDetail - status history-->
+    <div class="modal hide fade in " id="statusHistory" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">История статусов заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="statusHistoryPanel">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OrderDetail - cancel order-->
+    <div class="modal hide fade in " id="cancelOrder" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Отмена заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Пожалуйста, подтвердите, что хотите отменить заказ</p>
+                    <div class="input-group comment">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Комментарий</span>
+                        </div>
+                        <textarea class="form-control" id="cancel-comment" aria-label="With textarea"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-outline-success" onclick="CancelOrder()">Да, я уверен</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- OrderDetail - accept order-->
+    <div class="modal hide fade in " id="acceptOrder" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Принятие заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Пожалуйста, подтвердите, что хотите принять заказ</p>
+                    <div class="input-group comment">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Комментарий</span>
+                        </div>
+                        <textarea class="form-control" id="accept-comment" aria-label="With textarea"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-outline-success" onclick="AcceptOrder()">Да, я уверен</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- OrderDetail - builded order-->
+    <div class="modal hide fade in " id="buildedOrder" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Сборка заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Пожалуйста, подтвердите, что заказ собран</p>
+                    <div class="input-group comment">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Комментарий</span>
+                        </div>
+                        <textarea class="form-control" id="accept-comment" aria-label="With textarea"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-outline-success" onclick="AcceptOrder()">Да, я уверен</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- OrderDetail - finished order-->
+    <div class="modal hide fade in " id="finishedOrder" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Завершение заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Пожалуйста, подтвердите, что заказ завершен</p>
+                    <div class="input-group comment">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Комментарий</span>
+                        </div>
+                        <textarea class="form-control" id="accept-comment" aria-label="With textarea"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-outline-success" onclick="AcceptOrder()">Да, я уверен</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ProductDetail-->
+    <div class="modal hide fade in " id="productDetail" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title d-flex justify-content-evenly">
+                        <span id="productArticleLabel"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="productDetailPanel">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- create product -->
+    <div class="modal hide fade in " id="createProduct" tabindex="-1" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title d-flex justify-content-evenly">
+                    Создание товара
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-outline-success" onclick="CreateProduct()">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

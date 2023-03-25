@@ -1,0 +1,609 @@
+﻿@page
+@using AquaMarket_DTO
+@using AquaServer.Domain.Account.Actions.Helper
+@model AquaMarket.Pages.OrdersDetailModel
+@{
+    <style>
+
+        .back {
+            color: dimgray;
+            text-decoration: none;
+        }
+
+            .back:hover {
+                text-decoration: underline;
+                color: darkorange;
+            }
+
+        .card {
+            margin: auto;
+            max-width: 950px;
+            width: 90%;
+            border-radius: 1rem;
+            border: transparent;
+            color: dimgray;
+        }
+
+        .summary {
+            background-color: darkorange;
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            padding: 4vh;
+            color: white
+        }
+
+        .main {
+            margin-left: 3rem;
+        }
+
+        h1 {
+            color: dimgray;
+            font-size: xx-large;
+        }
+
+        .remove {
+            display: none;
+            cursor: pointer;
+        }
+
+        .main:hover .remove {
+            display: initial;
+        }
+
+        body {
+            color: dimgray;
+        }
+        /* ===== order ===== */
+        .order-form {
+            background-color: white;
+            border-radius: 5px;
+            padding: 0 16px;
+        }
+
+            .order-form .form-control {
+                background-color: rgba(255, 255, 255, 0.2);
+                border: 0;
+                padding: 12px 15px;
+                color: #fff;
+            }
+
+                .order-form .form-control::-webkit-input-placeholder {
+                    /* Chrome/Opera/Safari */
+                    color: #fff;
+                }
+
+            .order-form .select-container {
+                position: relative;
+            }
+
+                .order-form .select-container:before {
+                    position: absolute;
+                    right: 15px;
+                    top: calc(50% - 14px);
+                    font-size: 18px;
+                    color: #ffffff;
+                    content: '\F2F9';
+                }
+
+            .order-form .custom-select:focus {
+                -webkit-box-shadow: none;
+                box-shadow: none;
+            }
+
+            .order-form .select-container {
+                font-size: 18px;
+                color: #ffffff;
+                content: '\F2F9';
+            }
+
+        #filter-result .order-box {
+            border-radius: 10px;
+            padding: 10px 35px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        @@media (min-width: 992px) {
+            .order-overview {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 70px;
+            }
+        }
+
+        .order-content ul li {
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 5px;
+        }
+
+        @@media (min-width: 768px) {
+            .order-content ul li {
+                border-bottom: 0;
+                padding: 0;
+            }
+        }
+
+        .order-content ul li i {
+            font-size: 20px;
+            position: relative;
+            top: 1px;
+        }
+
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+
+        .grow:hover .history {
+            color: darkorange
+        }
+
+            .grow:hover .history:hover {
+                color: white;
+                background-color: darkorange
+            }
+
+        .history {
+            width: 150px;
+            min-height: 90px;
+        }
+
+        .address-label {
+            overflow: hidden;
+        }
+
+        #address-label {
+            text-decoration: underline;
+            overflow-wrap: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .edit-ico {
+            margin-left: 10px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            margin: auto;
+            max-width: 950px;
+            width: 90%;
+            border-radius: 1rem;
+            border: transparent;
+            color: dimgray;
+        }
+
+        .summary {
+            background-color: darkorange;
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            padding: 4vh;
+            color: white
+        }
+
+        .main {
+            margin-left: 3rem;
+        }
+
+        h1 {
+            color: dimgray;
+            font-size: xx-large;
+        }
+
+        .remove {
+            display: none;
+            cursor: pointer;
+        }
+
+        .main:hover .remove {
+            display: initial;
+        }
+    </style>
+    <div>
+        <div class="d-flex flex-row justify-content-between">
+            <div class="mt-3 ms-5 text-start lead">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z" />
+                </svg>
+                <a class="back" href="/Orders">Вернуться к списку заказов</a>
+            </div>
+            @{
+                var status = Model.Order.OrderStatusHistories.OrderByDescending(x => x.Date).First().Status.Id;
+                if (status == 4 || status == 5)
+                {
+                    <div class="mt-3 ms-5 text-start lead" onclick="window.open('/@Model.Order.Id', '_blank');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                            <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                            <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                        </svg>
+                        <a class="back" href="#">Квитанция</a>
+                    </div>
+                }
+            }
+            <div class="mt-3 me-5 text-start lead" data-bs-toggle="modal" data-bs-target="#statusHistory">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
+                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z" />
+                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8zm0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+                </svg>
+                <a class="back" href="#">История изменения статусов</a>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="row">
+                <div class="col-md-8 cart">
+                    @if (Model.Order?.WaterProducts?.Count > 0)
+                    {
+                        <h1 class="fs-4 text display-4 border-bottom pb-3 pt-3 row main">Питьевая продукция</h1>
+                        @foreach (var item in Model?.Order?.WaterProducts)
+                        {
+                            <div class="row border-bottom main mt-3 pb-3">
+                                <div class="row  align-items-center">
+                                    <div class="col d-flex flex-column justify-content-between" style="text-align:left">
+                                        <div class="d-flex flex-column justify-content-between">
+                                            <label class="mb-1 lead">@item?.WaterType.Title @item?.Volume л (@item?.PackageType?.Title)</label>
+                                        </div>
+                                        <div class="flex-column d-flex">
+                                            <div class="d-flex justify-content-between">
+                                                @{
+                                                    var price = (decimal)(item?.PackageType?.AddToCost + item?.WaterType?.AddToCost);
+                                                    if (item?.Volume < 0)
+                                                    {
+                                                        price *= Math.Abs(1 - item.Volume);
+                                                    }
+                                                    else
+                                                    {
+                                                        price *= (decimal)item?.Volume;
+                                                    }
+                                                }
+                                                <label class="mb-1">Цена: <span class="fw-bold">@price руб.</span></label>
+                                                <span>
+                                                    Количество:
+                                                    <input type="text" class="text-center border-0" style="color: darkorange;font-weight: 600;width:2rem" disabled value="@item?.Count">
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+
+                    @if (Model.Order?.Contents?.Count > 0)
+                    {
+                        <h1 class="fs-4 text display-4 border-bottom pb-3 pt-3 row main">Товары</h1>
+                        @foreach (var item in Model.Order.Contents)
+                        {
+                            <div class="row border-bottom main mt-3 pb-3">
+                                <div class="row  align-items-center">
+                                    @{
+                                        string pic = item.Accessory.Article.Trim() + ".jpg";
+                                    }
+                                    <div class="col-2"><img class="img-fluid" src="~/accessory/@pic" onerror="this.onerror=null; this.src='https://dummyimage.com/450x300/dee2e6/6c757d.jpg'"></div>
+                                    <div class="col d-flex flex-column justify-content-between ms-5" style="text-align:left">
+                                        <div class="d-flex flex-column justify-content-between">
+                                            <label class="mb-1 lead">@item.Accessory.Title</label>
+                                        </div>
+                                        <div class="flex-column d-flex">
+                                            <div class="d-flex justify-content-between">
+                                                <label class="mb-1">Цена: <span class="fw-bold">@item?.Accessory?.Price руб.</span></label>
+                                                <span>
+                                                    Количество:
+                                                    <input type="text" class="text-center border-0" style="color: darkorange;font-weight: 600;width:2rem" disabled value="@item?.Count">
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+
+                </div>
+                <div class="col-md-4 summary" style="text-align:left">
+                    <div class="text-center">
+                        <h5><b>Итог</b></h5>
+                    </div>
+                    <hr style="opacity:1">
+                    <div>Статус: @Model.Order.OrderStatusHistories.OrderByDescending(x=>x.Date).FirstOrDefault()?.Status.Title</div>
+                    @{
+                        var position = Model.Order?.Contents?.Count() + Model.Order?.WaterProducts?.Count();
+                        if (position is null)
+                            position = 0;
+                    }
+                    <div>Позиций: @position</div>
+                    <div class="d-flex flex-lg-wrap">
+                        <div class="w-100">Доставка:</div>
+                        @{
+                            var delivery = "Самовывоз";
+
+                            if (Model.Order?.Address is not null)
+                            {
+                                delivery = string.Join(", ", Model.Order?.City?.Title, Model.Order?.Address).Trim();
+                            }
+
+                            <div class="address-label d-flex justify-content-start">
+                                <span id="address-label">@delivery</span>
+                                @if (User?.IsInRole(AccessRole.Client) is true)
+                                {
+                                    @if (Model.Order.OrderStatusHistories?.OrderByDescending(x => x.Date).First().Status.Id < 4)
+                                    {
+                                        <div id="@Model.Order.Id" data-bs-toggle="modal" data-bs-target="#changeAddress">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pencil edit-ico grow-ico " viewBox="0 0 16 16">
+                                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                            </svg>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div id="@Model.Order.Id" onclick="DenyAddressChange()">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pencil edit-ico grow-ico " viewBox="0 0 16 16">
+                                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                            </svg>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="row" style="padding: 2vh 0;">
+                        <hr style="opacity:1">
+                        @{
+                            decimal cost = 0;
+                            if (Model is not null)
+                            {
+                                var content = Model.Order.Contents.Sum(x => x.Count * x.Accessory.Price);
+                                var waterCost = Model.Order.WaterProducts.Sum(x =>
+                                {
+                                    var v = x.Volume;
+                                    if (v < 1)
+                                    {
+                                        v = Math.Abs(1 - x.Volume);
+                                    }
+                                    return v * (decimal)(x.WaterType.AddToCost + x.PackageType.AddToCost) * x.Count;
+                                });
+                                cost = content + waterCost;
+                            }
+                        }
+                        <div class="row">
+                            <div class="col">Сумма заказа:</div>
+                            <div class="col text-right"><span id="cost">@cost</span> руб.</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Стоимость доставки:</div>
+                            <div class="col" id="deliveryCost">Бесплатно</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Итоговая стоимость:</div>
+                            <div class="col text-right"><span id="fullCost">@cost</span> руб.</div>
+                        </div>
+                    </div>
+                    @{
+                        var curStatus = Model.Order?.OrderStatusHistories?.OrderByDescending(x => x.Date).First().Status.Id ?? 0;
+                    }
+                    @if ((curStatus == 4 && Model.Order.City is null && User?.IsInRole(AccessRole.Warehouse) is true) ||
+                (curStatus == 5 && User?.IsInRole(AccessRole.Client) is true))
+                    {
+                        <button class="btn btn-outline btn btn-outline-danger" style="width: -webkit-fill-available;" data-bs-toggle="modal" data-bs-target="#finishedOrder">Завершить заказ</button>
+                    }
+                    @if (User?.IsInRole(AccessRole.Client) is true)
+                    {
+                        @if (curStatus < 3)
+                        {
+                            <button class="btn btn-outline btn btn-outline-danger" style="width: -webkit-fill-available;" data-bs-toggle="modal" data-bs-target="#cancelOrder">Отклонить заказ</button>
+                        }
+                    }
+                    else if (User?.IsInRole(AccessRole.Manager) is true && curStatus == 2)
+                    {
+                        <hr style="opacity:1">
+
+                        <div class="d-flex flex-row justify-content-evenly">
+                            <div class="grow-ico" data-bs-toggle="modal" data-bs-target="#acceptOrder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
+                                </svg>
+                            </div>
+                            <div class="grow-ico" data-bs-toggle="modal" data-bs-target="#cancelOrder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                </svg>
+                            </div>
+                        </div>
+                    }
+                    else if (User?.IsInRole(AccessRole.Warehouse) is true && curStatus == 3)
+                    {
+                        <hr style="opacity:1">
+
+                        <button class="btn btn-outline btn btn-outline-danger" style="width: -webkit-fill-available;" data-bs-toggle="modal" data-bs-target="#buildedOrder">Сборка завершена</button>
+                    }
+                    @if (curStatus == 4 && Model.Order.City is not null && User?.IsInRole(AccessRole.Delivery) is true)
+                    {
+                        <button class="btn btn-outline btn btn-outline-danger" style="width: -webkit-fill-available;" data-bs-toggle="modal" data-bs-target="#finishedOrder">Доставить</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.loader').addClass('d-none');
+
+        $.ajax({
+           url: `/api/market/city`,
+           contentType:'application/json; charset=utf-8',
+           type: 'GET',
+           dataType: 'json',
+           async: true,
+           success : (function (result) {
+               $.each(result, function(key, value)
+               {
+              $('#city').append(`<option value=${value.id}>${value.title}</option>`);
+
+               });
+           }),
+           error: (function (xhr, status) {
+               notyf.error('Произошла ошибка параметров доставки.');
+           })
+         });
+
+         $.ajax({
+           url: `/OrderDetail?handler=History&orderNum=@Model.Order.Id`,
+           contentType:'application/html; charset=utf-8',
+           type: 'GET',
+           dataType: 'html',
+           async: true,
+           success : (function (result) {
+               $('#statusHistoryPanel').html(result);
+           }),
+           error: (function (xhr, status) {
+                    notyf.error('Произошла ошибка истории статусов заказа.');
+           })
+         });
+
+             var label = $('#address-label').text();
+
+         if (label!='Самовывоз'){
+             $('#deliverySelect').val(1).change();
+
+             var address = label.substr(label.indexOf(",") + 1).trim();
+
+             $('#fullAddress').val(address);
+             $('#city').val(@Model.Order.City?.Id);
+             $('#deliveryCost').text('300 руб.');
+         }
+    });
+
+    function AdressCheck() {
+    if (!$('#adress').hasClass('d-none')){
+    if ($('#fullAddress').val().length>0){
+        $('#saveAddress').removeClass('d-none');
+    } else {
+        $('#saveAddress').addClass('d-none');
+    }
+    }
+    };
+
+    function DeliveryOption(e){
+        if (e == 0){
+           $('#address').addClass('d-none');
+           $('#saveAddress').removeClass('d-none');
+           $('#fullCost').text($('#cost').text());
+        } else {
+           $('#address').removeClass('d-none');
+           $('#saveAddress').addClass('d-none');
+            $('#fullCost').text(300.00 + parseFloat($('#cost').text()));
+           $('#fullAddress').val(null);
+        }
+    };
+
+    function UpdateAddress(){
+        var id = @Model.Order.Id;
+        var city = $('#city option:selected').val();
+        var address = $('#fullAddress').val();
+
+        var delivery =  $('#deliverySelect').val();
+
+        if (delivery == 0) {
+            city = '';
+            address = '';
+        } else {
+            city = `&cityId=${city}`;
+            address = `&address=${address}`;
+        }
+
+        $.ajax({
+           url: `/api/cart/address?order=${id}${city}${address}`,
+           contentType:'application/json; charset=utf-8',
+           type: 'PUT',
+           dataType: 'json',
+           async: true,
+           success : (function (result) {
+               location.reload();
+           }),
+           error: (function (xhr, status) {
+               notyf.error(xhr);
+           })
+         });
+    }
+
+    function CancelOrder(){
+             var id = @Model.Order.Id;
+             var comment = $('#cancel-comment').val();
+
+             if (comment.length>0){
+                 comment = `?comment=${comment}`;
+             }
+
+             @{
+                 var url = "management";
+                 if(User?.IsInRole(AccessRole.Client) is true){
+                     url = "cart";
+                 }
+             }
+
+             $.ajax({
+           url: `/api/@url/cancel/${id}${comment}`,
+           contentType:'application/json; charset=utf-8',
+           type: 'DELETE',
+           dataType: 'json',
+           async: true,
+           success : (function (result) {
+               location.reload();
+           }),
+           error: (function (xhr, status) {
+               notyf.error(xhr);
+           })
+         });
+         }
+
+         function AcceptOrder(){
+             var id = @Model.Order.Id;
+             var comment = $('#accept-comment').val();
+
+             if (comment.length>0){
+                 comment = `?comment=${comment}`;
+             }
+
+             @{
+                 var status = Model?.Order?.OrderStatusHistories?.OrderByDescending(x=>x.Date).First().Status.Id;
+                 var urlAccept = "management/accept";
+                 if (status == 3)
+                 {
+                     urlAccept = "warehouse/ready";
+                 } else if (status==4 && Model?.Order?.City is null && (User.IsInRole(AccessRole.Warehouse) || User.IsInRole(AccessRole.Client)) is true) {
+                     urlAccept = "warehouse/finish";
+                     
+                 } else if (status==4 && Model?.Order?.City is not null && User?.IsInRole(AccessRole.Delivery) is true){
+                     urlAccept = "warehouse/delivery";
+                 }
+             }
+
+             $.ajax({
+           url: `/api/@urlAccept/${id}${comment}`,
+           contentType:'application/json; charset=utf-8',
+           type: 'POST',
+           dataType: 'json',
+           async: true,
+           success : (function (result) {
+               location.reload();
+           }),
+           error: (function (xhr, status) {
+               notyf.error(xhr);
+           })
+         });
+         }
+
+         function DenyAddressChange(){
+             notyf.error("Менять место отправки можно только до статуса 'Доставка'.");
+         }
+
+</script>
+}

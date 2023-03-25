@@ -1,0 +1,107 @@
+﻿@page
+@model AquaMarketWebFront.Pages.AuthModel
+
+@{
+    <style>
+        /*
+        *
+        * ==========================================
+        * CUSTOM UTIL CLASSES
+        * ==========================================
+        *
+        */
+
+        /* Rounded tabs */
+
+        @@media (min-width: 576px) {
+            .rounded-nav {
+                border-radius: 50rem !important;
+            }
+        }
+
+        @@media (min-width: 576px) {
+            .rounded-nav .nav-link {
+                border-radius: 50rem !important;
+            }
+        }
+
+        /* With arrow tabs */
+
+        .with-arrow .nav-link.active {
+            position: relative;
+        }
+
+            .with-arrow .nav-link.active::after {
+                content: '';
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-top: 6px solid #2b90d9;
+                position: absolute;
+                bottom: -6px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: block;
+            }
+
+        /* lined tabs */
+
+        .lined .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+        }
+
+            .lined .nav-link:hover {
+                border: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .lined .nav-link.active {
+                background: none;
+                color: #555;
+                border-color: #2b90d9;
+            }
+
+        .nav-pills .nav-link {
+            color: #555;
+        }
+
+        .text-uppercase {
+            letter-spacing: 0.1em;
+        }
+
+    </style>
+
+    <div class="center-block text-center p-5 pb-0 bg-white rounded shadow mb-5">
+
+        <ul class="center-block nav nav-pills mb-3 nav nav-tabs nav-pills flex-column flex-sm-row text-center bg-light border-0 rounded-nav" id="pills-tab" role="tablist" style="display: -webkit-inline-box;">
+            <li class="nav-item flex-sm-fill" role="presentation" style="margin-right: 0.5rem;">
+                <button class="nav-link rounded grow active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Авторизация</button>
+            </li>
+            <li class="nav-item flex-sm-fill" role="presentation" style="margin-left: 0.5rem;">
+                <button class="nav-link rounded grow" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Регистрация</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                <p style="color:dimgray">Я клиент</p>
+                @await Html.PartialAsync("Partial/LoginFast", Model)
+                <div class="divider" style="border-radius: 1rem!important;background-color: darkorange;height: 1px;"></div>
+                <p style="color:dimgray; margin-top:1rem">Я сотрудник</p>
+                @await Html.PartialAsync("Partial/Login", Model.Auth)
+
+            </div>
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+
+                @await Html.PartialAsync("Partial/Register", Model.Profile)
+
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.loader').addClass('d-none');
+        });
+    </script>
+}

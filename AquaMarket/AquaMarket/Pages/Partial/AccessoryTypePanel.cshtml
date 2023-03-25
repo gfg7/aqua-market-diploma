@@ -1,0 +1,118 @@
+﻿@using AquaMarket_DTO
+@model List<EntityType>
+@{
+    <link rel="stylesheet" href="~/css/multiselect/Multiselect.css" asp-append-version="true" />
+    <link rel="stylesheet" href="r~/css/slider/Slider.css" asp-append-version="true" />
+    <style>
+        input[type=range]::-webkit-slider-runnable-track {
+            background-color: darkorange;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            background-color: white;
+        }
+
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 18px;
+                height: 18px;
+                border-radius: 10px;
+                background-color: white;
+                overflow: visible;
+                cursor: pointer;
+            }
+
+        input[type=range] {
+            width: 100%;
+            margin: 9.15px 0;
+            background-color: transparent;
+            -webkit-appearance: none;
+        }
+    </style>
+    <div class="d-flex flex-column h-auto">
+        <div class="d-flex flex-row justify-content-center">
+            <label class="m-lg-3" style="font-weight: 400;font-size: large;">Я ищу...</label>
+            <label for="checkbox-1" class="multiselect_label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="dimgray" class="bi bi-search grow-ico" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+            </label>
+        </div>
+        <div class="form_label">
+            <div class="multiselect_block">
+                <label for="select-1" class="field_multiselect ms-5" style="display:contents">Любой продукт</label>
+                <input id="checkbox-1" class="multiselect_checkbox" type="checkbox">
+                <select id="select-type" class="field_select mt-3" multiple>
+                    @foreach (var type in Model)
+                    {
+                        <option value="@type.Id">@type.Title</option>
+                    }
+
+                </select>
+            </div>
+        </div>
+        <!-- slider -->
+        <label class="m-lg-3" style="font-weight: 400;font-size: large;">с ценой...</label>
+        <section class="range-slider m-auto">
+            <span class="rangeValues d-flex flex-row justify-content-between">
+                <span id="minCost"></span>
+                <span id="maxCost"></span>
+            </span>
+            <input class="slider" onchange="Filter(this)" value="1" min="1" max="10000" type="range">
+            <input class="slider" onchange="Filter(this)" value="10000" min="1" max="10000" type="range">
+        </section>
+    </div>
+    <script type="text/javascript">
+                let multiselect_block = document.querySelectorAll(".multiselect_block");
+                multiselect_block.forEach(parent => {
+                    let label = parent.querySelector(".field_multiselect");
+                    let select = parent.querySelector(".field_select");
+                    let text = label.innerHTML;
+                    select.addEventListener("change", function(element) {
+                        let selectedOptions = this.selectedOptions;
+                        label.innerHTML = "";
+                        for (let option of selectedOptions) {
+                            let button = document.createElement("button");
+                            button.type = "button";
+                            button.className = "btn_multiselect mx-3 my-1";
+                            button.textContent = option.textContent;
+                            button.onclick = _ => {
+                                option.selected = false;
+                                button.remove();
+                                if (!select.selectedOptions.length)
+                                    label.innerHTML = text
+                                Filter(this);
+
+                            };
+                            label.append(button);
+                        }
+                        Filter(this);
+                    })
+                });
+
+                function getVals(){
+          var parent = this.parentNode;
+          var slides = parent.getElementsByTagName("input");
+            var slide1 = parseFloat( slides[0].value );
+            var slide2 = parseFloat( slides[1].value );
+          if( slide1 > slide2 ){ var tmp = slide2; slide2 = slide1; slide1 = tmp; }
+
+          $('#minCost').text(slide1);
+          $('#maxCost').text(slide2);
+        }
+
+        window.onload = function(){
+          var sliderSections = document.getElementsByClassName("range-slider");
+              for( var x = 0; x < sliderSections.length; x++ ){
+                var sliders = sliderSections[x].getElementsByTagName("input");
+                for( var y = 0; y < sliders.length; y++ ){
+                  if( sliders[y].type ==="range" ){
+                    sliders[y].oninput = getVals;
+                    sliders[y].oninput();
+                  }
+                }
+              }
+        }
+    </script>
+}

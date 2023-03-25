@@ -1,0 +1,201 @@
+﻿@using AquaServer.Domain.Account.Actions.Helper
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Aqua Маркет</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/animation-backdround/AnimationBackground.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/glass-block/GlassBlock.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/loader/loader.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/slider/Slider.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/notyf-master/src/notyf.scss" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    @*header navigation*@
+    <div class="header">
+        <nav class="fixed-top navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Catalogue">Aqua Маркет</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1" style="display: flex;place-content: flex-end;place-content: space-evenly;margin-left: 15vw;">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Catalogue">Каталог товаров</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Water">Заказ воды</a>
+                        </li>
+                        @if (User?.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole(AccessRole.Client))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Orders">Мои заказы</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Cart">Корзина</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Orders">Список заказов</a>
+                                </li>
+                            }
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-nowrap text-dark" asp-area="" asp-page="/Contacts">Доставка и контакты</a>
+                        </li>
+
+                        @{
+                            if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Профиль">
+                                    <div class="dropdown">
+                                        <a class="nav-link text-dark dropdown-toggle" href="#" role="button" id="profileDropdownNav" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                                            </svg>
+                                        </a>
+
+                                        <div class="dropdown-menu" aria-labelledby="profileDropdownNav">
+                                            <a class="nav-link text-dark dropdown-item" asp-page="/Account">Моя информация</a>
+                                            @if (User?.IsInRole(AccessRole.Manager) is true)
+                                            {
+                                                <a class="nav-link text-dark dropdown-item" asp-page="/AddProfile">Создать аккаунт сотрудника</a>
+                                            }
+                                            <a class="nav-link text-dark dropdown-item" asp-area="" asp-page="/Auth" asp-page-handler="SignOut">Выйти</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                            else
+                            {
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/Auth">Войти</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+            @*loader*@
+            <div class="loader" style="position: absolute; top: 200%;left: 0; right:0"></div>
+        </nav>
+        @*header navigation*@
+        <div class="fixed-bottom" style="margin-right: 3rem;right:0;left: auto;margin-bottom: 3rem;">
+            <a class="scroll-top" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11.574 3.712c.195-.323.662-.323.857 0l9.37 15.545c.2.333-.039.757-.429.757l-18.668-.006c-.385 0-.629-.422-.428-.758l9.298-15.538zm.429-2.483c-.76 0-1.521.37-1.966 1.111l-9.707 16.18c-.915 1.523.182 3.472 1.965 3.472h19.416c1.783 0 2.879-1.949 1.965-3.472l-9.707-16.18c-.446-.741-1.205-1.111-1.966-1.111z" /></svg>
+            </a>
+        </div>
+        <!--Content before waves-->
+        <div class="flex" style="margin-top: 10vh;min-height: 66vh;">
+            <div class="container" style="z-index:1;">
+                <main role="main" class="pb-3 d-inline-block main-container">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+
+        @*wave*@
+        <div>
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                 viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                </defs>
+                <g class="parallax">
+                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+                    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+                    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+                </g>
+            </svg>
+        </div>
+        @*wave*@
+    </div>
+
+
+    <footer class="border-top footer text-muted bottom-0 p-3 mt-auto" style="background-color:white">
+        <div class="d-flex flex-column justify-content-between">
+            <div class="d-flex flex-row justify-content-between">
+                <div class="d-flex flex-row mx-auto ms-xl-5 justify-content-start">
+                    <div class="d-flex flex-column mx-5">
+                        <label class="lead"><strong>О компании</strong></label>
+                        <a asp-area="" asp-page="" class="text-black-50">О нас</a>
+                        <a asp-area="" asp-page="/Contacts" class="text-black-50">Доставка и контакты</a>
+                        <a asp-area="" asp-page="" class="text-black-50">Наша политика</a>
+                    </div>
+                    <div class="d-flex flex-column mx-3">
+                        <label class="lead"><strong>Покупателям</strong></label>
+                        <a asp-area="" asp-page="/Catalogue" class="text-black-50">Каталог товаров</a>
+                        <a asp-area="" asp-page="/Water" class="text-black-50">Заказ воды</a>
+                    </div>
+                </div>
+                <div class="social-icons d-flex flex-row justify-content-end w-25 fs-1 mt-3 px-5">
+                    <a class="social-icon social-icon--twitter mx-3">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a class="social-icon social-icon--instagram mx-3">
+                        <i class="fa fa-instagram"></i>
+                    </a>
+                    <a class="social-icon social-icon--facebook ms-3">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="d-flex flex-column flex-wrap text-end mx-5">
+                <label>&copy; @DateTime.Now.Year - Aqua Маркет</label>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/ajax/ajax.js"></script>
+    <script src="~/js/Slider.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=e611495b-a80f-4c0e-a76f-c7d2c42204ef&lang=ru_RU&mode=debug" type="text/javascript"></script>
+    @await Component.InvokeAsync("Notyf")
+    @await RenderSectionAsync("Scripts", required: false)
+    <script type="text/javascript">
+
+         $(document).ajaxStart(function () {
+              $(".loader").removeClass('d-none');
+              console.info('start');
+         });
+
+         $(document).ajaxSend(function (event, jqxhr, settings) {
+              console.info(event);
+              console.info(jqxhr);
+              console.info(settings);
+         });
+
+
+         $(document).ajaxComplete(function () {
+              $(".loader").addClass('d-none');
+              console.info('complete');
+         });
+
+        var scroll = new SmoothScroll('a[href*="#"]');
+    </script>
+    @await Html.PartialAsync("ModalFrames")
+</body>
+</html>

@@ -1,0 +1,40 @@
+﻿@using AquaMarket_DTO
+@model List<OrderStatusHistory>
+@{
+    <div class="card">
+        <div class="row">
+            <div class="cart">
+             <div class="d-flex flex-row w-100 justify-content-between border-bottom">
+             <p>Статус</p>
+             <p>Дата</p>
+             </div>
+                @foreach (var item in Model)
+                {
+                    <div class="border-bottom mt-3 pb-3">
+                        <div class="align-items-center">
+                            <div class="d-flex flex-row justify-content-between">
+                                <div class="d-flex flex-row w-100 justify-content-between">
+                                    <label class="mb-1 lead text-start">@item.Status.Title</label>
+                                    <label class="mb-1 lead text-end">
+                                    @item.Date.ToShortDateString()
+                                    <br>
+                                    @item.Date.ToShortTimeString()
+                                    </label>
+                                </div>
+                            </div>
+                            @if (item.Comment is not null)
+                            {
+                                <hr class="w-25" style="color:darkorange;opacity:1" />
+                                <label class="mb-1">
+                                    Комментарий:
+                                    <br>
+                                    <span>@item.Comment</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

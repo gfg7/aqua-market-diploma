@@ -1,0 +1,238 @@
+﻿@page
+@model CartModel
+@{
+    <style>
+        .main {
+            margin-left: 3rem;
+        }
+
+        h1 {
+            color: dimgray;
+            font-size: xx-large;
+        }
+
+        .remove {
+            display: none;
+            cursor: pointer;
+        }
+
+        .main:hover .remove {
+            display: initial;
+        }
+
+    </style>
+    <div class="card mt-5" id="cart">
+    </div>
+}
+@section Scripts{
+<script type="text/javascript">
+        function GetCart(e){
+                  $.ajax({
+                   url:'/Cart?handler=Cart',
+                   contentType:'application/html; charset=utf-8',
+                   type: 'GET',
+                    dataType: 'html',
+                   async: true,
+                   success : (function (result) {
+                      $('#cart').html(result);
+
+                      $.ajax({
+               url: `/api/market/city`,
+               contentType:'application/json; charset=utf-8',
+               type: 'GET',
+               dataType: 'json',
+               async: true,
+               success : (function (result) {
+                   $.each(result, function(key, value)
+                   {
+                  $('.city').append(`<option value=${value.id}>${value.title}</option>`);
+
+                   });
+                   $(".city").val(1).change();
+               }),
+               error: (function (xhr, status) {
+                   notyf.error('Произошла ошибка.');
+               })
+             });
+                   }),
+                   error: (function (xhr, status) {
+                       notyf.error('Произошла ошибка.');
+                   })
+                 });
+    };
+
+        function AdressCheck() {
+        if (!$('#adress').hasClass('d-none')){
+        if ($('#fullAddress').val().length>0){
+            $('#buy').removeClass('d-none');
+        } else {
+            $('#buy').addClass('d-none');
+        }
+        }
+        };
+
+    $(document).ready(function(){
+        GetCart(this);
+    });
+
+        function DeliveryOption(e){
+            if (e == 0){
+               $('#address').addClass('d-none');
+               $('#deliveryCost').text('Бесплатно');
+               $('#fullCost').text($('#cost').text());
+               $('#buy').removeClass('d-none');
+
+            } else {
+               $('#address').removeClass('d-none');
+               $('#deliveryCost').text('300 руб.');
+               $('#fullCost').text(300.00 + parseFloat($('#cost').text()));
+               $('#buy').addClass('d-none');
+               $('#fullAddress').val(null);
+            }
+        };
+
+         function RemoveAccessory(id){
+                  $.ajax({
+                   url:`/api/Cart/accessory?article=${id}`,
+                   contentType:'application/json; charset=utf-8',
+                   type: 'DELETE',
+                   dataType: 'json',
+                   async: true,
+                   success : (function (result) {
+                      GetCart(this);
+                   }),
+                   error: (function (xhr, status) {
+                      GetCart(this);
+                       notyf.error('Произошла ошибка при удалении позиции.');
+                   })
+                   })
+            };
+            
+            function RemoveWater(id){
+                  $.ajax({
+                   url:`/api/Cart/water?id=${id}`,
+                   contentType:'application/json; charset=utf-8',
+                   type: 'DELETE',
+                   dataType: 'json',
+                   async: true,
+                   success : (function (result) {
+                      GetCart(this);
+                   }),
+                   error: (function (xhr, status) {
+                      GetCart(this);
+                       notyf.error('Произошла ошибка при удалении позиции.');
+                   })
+                   })
+            };
+
+            function AddCountAccessory(id){
+               $.ajax({
+               url: `/api/Cart/accessory?article=${id}&count=1`,
+               traditional: true,
+               contentType:'application/json; charset=utf-8',
+               type: 'POST',
+               dataType: 'json',
+               async: true,
+               success : (function (result) {
+                   GetCart(this);
+               }),
+               error: (function (xhr, status) {
+                   notyf.error('Произошла ошибка. Попробуйте еще раз.');
+               })
+             })
+            };
+
+             function DecreaseCountAccessory(id){
+                 $.ajax({
+               url: `/api/Cart/accessory?article=${id}&count=1`,
+               traditional: true,
+               contentType:'application/json; charset=utf-8',
+               type: 'DELETE',
+               dataType: 'json',
+               async: true,
+               success : (function (result) {
+                   GetCart(this);
+               }),
+               error: (function (xhr, status) {
+                   notyf.error('Произошла ошибка. Попробуйте еще раз.');
+               })
+             })
+             };
+             
+             function AddCountWater(id){
+               $.ajax({
+               url: `/api/Cart/water?id=${id}&count=1`,
+               traditional: true,
+               contentType:'application/json; charset=utf-8',
+               type: 'POST',
+               dataType: 'json',
+               async: true,
+               success : (function (result) {
+                   GetCart(this);
+               }),
+               error: (function (xhr, status) {
+                   notyf.error('Произошла ошибка. Попробуйте еще раз.');
+               })
+             })
+            };
+
+             function DecreaseCountWater(id){
+                 $.ajax({
+               url: `/api/Cart/water?id=${id}&count=1`,
+               traditional: true,
+               contentType:'application/json; charset=utf-8',
+               type: 'DELETE',
+               dataType: 'json',
+               async: true,
+               success : (function (result) {
+                   GetCart(this);
+               }),
+               error: (function (xhr, status) {
+                   notyf.error('Произошла ошибка. Попробуйте еще раз.');
+               })
+             })
+             };
+
+            function ChangeAddress(){
+                    console.info(document.getElementById("address").classList);
+                if (!$('#address').hasClass('d-none')) {
+
+                    var city = $('.city option:selected').val();
+                    var address = $('#fullAddress').val();
+                    var order = $('#orderId').val();
+                    $.ajax({
+                   url:`/api/Cart/address?cityId=${city}&address=${address}&order=${order}`,
+                   contentType:'application/json; charset=utf-8',
+                   type: 'PUT',
+                   dataType: 'json',
+                   async: true,
+                   success : (function (result) {
+                   }),
+                   error: (function (xhr, status) {
+                       notyf.error('Произошла ошибка при сохранении адреса доставки.');
+                   })
+                   });
+                }
+            }
+
+            function Buy(){
+                   ChangeAddress();
+                                    $.ajax({
+                   url:"/api/Cart/purchase",
+                   contentType:'application/json; charset=utf-8',
+                   type: 'POST',
+                   dataType: 'json',
+                   async: true,
+                   success : (function (result) {
+                       GetCart();
+                       notyf.success("Заказ оформлен. Вы можете проследить статус заказа в разделе 'Мои заказы'.");
+                   }),
+                   error: (function (xhr, status) {
+                      GetCart(this);
+                       notyf.error('Произошла ошибка при оформлении.');
+                   })
+                   });
+
+            }
+</script>
+}

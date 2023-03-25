@@ -1,0 +1,48 @@
+﻿@page
+@{
+    <div class="row">
+        <iframe name="dummy" id="dummy" class="d-none"></iframe>
+        <div class="card bg-white bg-white text-dark justify-content-center d-flex flex-column p-xl-5 w-100" style="width:60">
+            <p class="lead">Выдача прав сотрудника:</p>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon3">Email</span>
+                </div>
+                <input type="email" class="form-control email-account" id="basic-url" aria-describedby="basic-addon3">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Позиция</label>
+                </div>
+                <select class="custom-select position" id="inputGroupSelect01">
+                    <option value="1">Менеджер</option>
+                    <option value="2">Пункт выдачи</option>
+                    <option value="3">Курьер</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-outline-primary" onclick="Create()">Создать</button>
+        </div>
+    </div>
+}
+@section Scripts{
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.loader').addClass('d-none');
+        $('.position').val("1").change();
+    });
+
+    function Create(){
+        email = $('.email-account').val();
+        position = parseInt($('.position option:selected').val());
+
+        $.ajax({
+           url: `/api/management/hire?email=${email}&position=${position}`,
+           contentType:'application/json; charset=utf-8',
+           type: 'POST',
+           dataType: 'json',
+           async: true
+         });
+         notyf.success('Проверьте почту на наличие письма. Если письмо не приходит, то данного аккаунта не существует или уже занят сотрудником.');
+    }
+</script>
+}

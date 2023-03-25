@@ -1,0 +1,132 @@
+﻿@page
+@model AquaMarket.Pages.AccountModel
+@{
+    <style>
+        .tab-pane {
+            width: inherit;
+            height: inherit;
+            padding: 1rem;
+        }
+
+        .tab-content {
+            margin-left: 2rem;
+            min-width: 30vw;
+            height: 100%;
+        }
+
+        .row .btn-outline-light .active {
+            color: darkorange;
+        }
+
+        .nav-pills {
+            height: 25vh;
+        }
+
+        hr {
+            background-color: darkorange;
+            opacity: 1;
+        }
+    </style>
+    <div class="row w-100 mt-3">
+        <div class="d-flex flex-row">
+            <div class="d-flex flex-column">
+                <div class="nav flex-column nav-pills justify-content-evenly" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <button class="btn btn-outline-light active" id="v-pills-profile-tab" onclick="ShowAccountTab()" data-bs-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Просмотр</button>
+                    <button class="btn btn-outline-light" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" data-bs-toggle="pill" role="tab" aria-selected="false" onclick="EditAccountTab()">Редактировать</button>
+                </div>
+            </div>
+            <div class="card tab-content w-75 bg-white text-dark justify-content-center d-flex flex-row pb-3" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <p class="lead">Общая информация</p>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Имя</span>
+                        </div>
+                        <input type="text" class="form-control name" disabled aria-describedby="basic-addon3" value="@Model.Profile?.Name">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Фамилия</span>
+                        </div>
+                        <input type="text" class="form-control surname" disabled aria-describedby="basic-addon3" value="@Model.Profile?.Surname">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Отчество</span>
+                        </div>
+                        <input type="text" class="form-control patronymic" disabled aria-describedby="basic-addon3" value="@Model.Profile?.Patronymic">
+                    </div>
+                    <hr class="mt-3">
+                    <p class="lead">Контактная информация</p>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Email</span>
+                        </div>
+                        <input type="email" class="form-control email" disabled aria-describedby="basic-addon3" value="@Model.Profile?.Email">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Телефон</span>
+                        </div>
+                        <input type="tel" class="form-control phone" disabled aria-describedby="basic-addon3" value="@Model.Profile?.Phone">
+                    </div>
+                    <div class="d-none d-flex flex-row justify-content-between" id="changePanel">
+                        <button type="button" class="btn btn-outline-danger" onclick="GetAccount()">Отмена</button>
+                        <button type="button" class="btn btn-outline-success" onclick="EditAccount()">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.loader').addClass('d-none');
+    });
+
+    function GetAccount(){
+         location.reload();
+    }
+
+    function EditAccountTab(){
+        $("input").prop('disabled', false);
+        $('#changePanel').removeClass('d-none');
+    }
+
+    function ShowAccountTab(){
+        $("input").prop('disabled', true);
+        $('#changePanel').addClass('d-none');
+    }
+
+    function EditAccount(){
+        var data = {
+            email : $('.email').val(),
+            phone:$('.phone').val(),
+            name:$('.name').val(),
+            surname:$('.surname').val(),
+            patronymic:$('.patronymic').val()
+        };
+
+        data = JSON.stringify(data);
+
+        $.ajax({
+           url: `/api/account/profile`,
+           contentType:'application/json; charset=utf-8',
+           type: 'PUT',
+           data:data,
+           dataType: 'json',
+           async: true,
+           success : (function (result) {
+               GetAccount();
+           }),
+           error: (function (xhr, status) {
+               var e = xhr.responseText;
+               e = JSON.parse(e);
+               console.info(e.errors);
+               notyf.error(e.errors);
+           })
+         });
+    }
+</script>
+}

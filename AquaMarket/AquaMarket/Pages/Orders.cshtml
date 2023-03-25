@@ -1,0 +1,261 @@
+﻿@page
+@using AquaServer.Domain.Account.Actions.Helper
+@model AquaMarketWebFront.Pages.OrdersModel
+@{
+    <style>
+        .order-form {
+            background-color: white;
+            border-radius: 5px;
+            padding: 0 16px;
+        }
+
+            .order-form .form-control {
+                background-color: rgba(255, 255, 255, 0.2);
+                border: 0;
+                padding: 12px 15px;
+                color: #fff;
+            }
+
+            .order-form .select-container {
+                position: relative;
+                width: -webkit-fill-available;
+            }
+
+            .order-form .custom-select {
+                font-size: smaller;
+            }
+
+                .order-form .custom-select:focus {
+                    -webkit-box-shadow: none;
+                    box-shadow: none;
+                }
+
+            .order-form .select-container {
+                font-size: 18px;
+                color: #ffffff;
+                content: '\F2F9';
+            }
+
+        #filter-result .order-box {
+            border-radius: 10px;
+            padding: 10px 35px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        @@media (min-width: 992px) {
+            .order-overview {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 70px;
+            }
+        }
+
+        .order-content ul li {
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 5px;
+        }
+
+        @@media (min-width: 768px) {
+            .order-content ul li {
+                border-bottom: 0;
+                padding: 0;
+            }
+        }
+
+        .order-content ul li i {
+            font-size: 20px;
+            position: relative;
+            top: 1px;
+        }
+
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+
+        .grow:hover .history {
+            color: darkorange
+        }
+
+            .grow:hover .history:hover {
+                color: white;
+                background-color: darkorange
+            }
+
+        .history {
+            width: 150px;
+            min-height: 90px;
+        }
+
+        .box input {
+            height: 45px;
+        }
+
+            .box input:not(.searching) {
+                width: 45px;
+                border: 2px solid;
+                border-color: transparent;
+                border-radius: 50px;
+                box-sizing: border-box;
+                color: dimgray;
+                outline: none;
+                transition: .5s;
+            }
+
+        .searching {
+            width: 300px;
+            border: 2px solid;
+            border-color: darkgray;
+            border-radius: 10px;
+            color: dimgray;
+            outline: none;
+        }
+
+        .box:hover input {
+            width: 300px;
+            border-radius: 10px;
+            border-color: darkorange;
+        }
+
+        .box:hover i {
+            opacity: 0;
+            z-index: -1;
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css" integrity="sha256-3sPp8BkKUE7QyPSl6VfBByBroQbKxKG7tsusY2mhbVY=" crossorigin="anonymous" />
+
+    <div class="row" style="min-width: 50vw;">
+        <div class="d-flex flex-row">
+            <div class="col-lg-10 mx-auto">
+                <div class="order-search d-none d-flex flex-column align-items-center" style="min-height: 60vh;">
+                    <div class="order-form mb-3 mt-3 d-flex justify-content-between">
+                        @if (User?.IsInRole(AccessRole.Client) is false)
+                        {
+                            <div class="box d-flex flex-column">
+                                <div name="search">
+                                    <input type="text" class="input" id="search" onmouseout="SearchCheck()" oninput="SearchCheck()">
+                                </div>
+                                <div style="margin-top: -80%;cursor:pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        }
+                        <div class="select-container">
+                                <select class="custom-select-status form-control client-statuses" style="color:dimgray" onchange="GetMyOrder()">
+                            @if (User?.IsInRole(AccessRole.Client) is true)
+                            {
+                                    <option value="0">Все</option>
+                            }
+                                </select>
+                        </div>
+                        <div class="select-container" style="width: 45%;">
+                            <select class="custom-select form-control" style="color:dimgray;" onchange="GetMyOrder()">
+                                <option value="true" selected="selected">По возрастанию</option>
+                                <option value="false">По убыванию</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="filter-result" style="width: 40vw;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+@section Scripts{
+<script type="text/javascript">
+     function GetMyOrder(search){
+     status = $(".custom-select-status option:selected").val();
+
+     if (status!=0) {
+     status = `&status=${status}`;
+     } else {
+     status = '';
+     }
+
+     if ( search !=undefined && search.length>0){
+             status = status + `&search=${search}`;
+         }
+
+     order = $(".custom-select option:selected").val();
+
+     $('#filter-result').innerHTML = null;
+
+    @{
+
+     var handler = string.Empty;
+
+     if (User.IsInRole(AccessRole.Client)){
+
+         handler = "MyOrders";
+
+
+     } else {
+         handler = "Orders";
+
+        }
+    }
+
+      var url = `/Orders?handler=@handler&desc=${order}${status}`;
+
+     $.ajax({
+     url: url,
+     contentType:'application/html; charset=utf-8',
+     type: 'GET',
+     dataType: 'html',
+     async: true,
+     success : (function (result) {
+        $('#filter-result').html(result);
+        $('.order-search').removeClass('d-none');
+     }),
+     error: (function (xhr, status) {
+        notyf.error('Произошла ошибка.');
+        })
+     });
+     };
+
+     $(document).ready(function(){
+        if ($('.client-statuses').length>0){
+            $.ajax({
+     url: `/api/market/status`,
+     contentType:'application/json; charset=utf-8',
+     type: 'GET',
+     dataType: 'json',
+     async: true,
+     success : (function (result) {
+     $.each(result.slice(1), function(key, value)
+     {
+
+     $('.client-statuses').append(` <option value=${value.id}>${value.title}</option>`);
+
+     });
+
+     GetMyOrder();
+     }),
+     error: (function (xhr, status) {
+     notyf.error('Произошла ошибка.');
+     })
+     });
+        } else {
+            GetMyOrder();
+        }
+     });
+
+     function SearchCheck(){
+         if ($('#search').val().length>0){
+             $('#search').addClass('searching');
+         } else {
+             $('#search').removeClass('searching');
+         }
+             GetMyOrder($('#search').val());
+     }
+</script>
+}

@@ -1,0 +1,221 @@
+﻿@page
+@using AquaMarket_DTO
+@using AquaServer.Domain.Account.Actions.Helper
+@model AquaMarketWebFront.Pages.CatalogueModel
+@{
+    <div class="d-flex flex-row mt-3" style="min-height: 60vh;min-width: 85vw;">
+        <!--filter-->
+        <div class="bg-white card w-25 filter-panel pb-4 my-0" style="visibility:hidden; height:fit-content">
+            @if (User?.IsInRole(AccessRole.Manager) is true)
+            {
+                <button onclick="window.open('/products', '_blank');" class="btn btn-outline-primary">Скачать список</button>
+            }
+            <div class="d-flex flex-column w-auto" id="filters"></div>
+        </div>
+        <!-- Section-->
+        <div class="container-fluid">
+            <section>
+                <div class="container px-4 px-lg-5">
+                    <div class="row gx-4 gx-lg-5 row-cols-md-3 row-cols-xl-3 justify-content-center" id="list">
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+}
+@section Scripts {
+<script>
+
+    function Reset(e){
+        $('input:checkbox').removeAttr('checked');
+    };
+
+    function Filter(e){
+        $('#list').innerHTML = null;
+
+       types = $("#select-type").val();
+
+
+       if (types===undefined || types===null){
+               types = null;
+           } else {
+               if (Array.isArray(types)){
+               types = types.map((i) => Number(i));
+               } else {
+                   types = [];
+                   types.push(Number($("#select-type").val()));
+               }
+           }
+
+       var data = {
+       productType : types,
+       minPrice : parseInt($('#minCost').text()),
+       maxPrice : parseInt($('#maxCost').text())
+       };
+
+          $.ajax({
+          url: '/Catalogue?handler=Filter',
+          data: data,
+          contentType:'application/html; charset=utf-8',
+          type: 'GET',
+          dataType: 'html',
+          async: true,
+          traditional: true,
+          success : (function (result) {
+             $('#list').html(result);
+          }),
+          error: (function (xhr, status) {
+              notyf.error(xhr);
+          })
+        });
+    };
+
+    $(document).ready(Filter(this));
+
+    $(document).ready(function () {
+
+        $(".filter-panel").css("visibility", "hidden");
+         $.ajax({
+          url:'/Catalogue?handler=Type',
+          contentType:'application/html; charset=utf-8',
+          type: 'GET',
+           dataType: 'html',
+          async: true,
+          success : (function (result) {
+             $('#filters').prepend(result);
+             $(".filter-panel").css("visibility", "visible");
+          }),
+          error: (function (xhr, status) {
+              notyf.error(xhr);
+          })
+        });
+    });
+
+        function AddToCart(e){
+           $('.add-to-cart').css('pointer-events', 'none');
+          $.ajax({
+          url: `/api/Cart/accessory?article=${e.id}&count=1`,
+          traditional: true,
+          contentType:'application/json; charset=utf-8',
+          type: 'POST',
+          dataType: 'json',
+          async: true,
+          success : (function (result) {
+             notyf.success("Товар добавлен в корзину.");
+          }),
+          error: (function (xhr, status) {
+              notyf.error('Произошла ошибка. Попробуйте еще раз.');
+          })
+        });
+           $('.add-to-cart').css('pointer-events', 'auto');
+    };
+
+    function ShowDetail(article){
+         $.ajax({
+          url:`/Catalogue?handler=Detail&article=${article}`,
+          contentType:'application/html; charset=utf-8',
+          type: 'GET',
+           dataType: 'html',
+          async: true,
+          success : (function (result) {
+              $('#productArticleLabel').text(article);
+              $('#productDetailPanel').html(result);
+              $('#productDetail').modal('toggle')
+          }),
+          error: (function (xhr, status) {
+              notyf.error('Произошла ошибка при поиске детальной информации.');
+          })
+        });
+    }
+
+    function EditClick(article){
+        $('.show-only').removeClass('show-only');
+        $('.bi-upload').css('visibility', 'visible');
+        $('.edit-btn').html('Сохранить');
+        $('.edit-btn').on('click', function(){
+
+            var data = {
+                Article: article,
+                Title : $('#productDetailTitle').val(),
+                Price : parseFloat($('#productDetailPrice').val()).toFixed(2),
+                Description : $('#productDetailDescription').val(),
+                AccessoryType : {
+                    Id : parseInt($('#productDetailType').data('type')),
+                    Title : ''
+                }
+            };
+
+            data = JSON.stringify(data);
+
+            $.ajax({
+          url: `/api/catalogue/product/${article}`,
+          traditional: true,
+          contentType:'application/json; charset=utf-8',
+          type: 'PUT',
+          data : data,
+          dataType: 'json',
+          async: true,
+          success : (function (result) {
+              if ($('input[type=file]').val().length>0){
+                $('input[type=submit]').click();
+              }
+             $('#productDetail').modal('toggle');
+             Filter();
+          }),
+          error: (function (xhr, status) {
+              notyf.error('Произошла ошибка. Попробуйте еще раз.');
+          })
+        });
+        });
+    }
+
+    function PictureChange(input){
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                alert(e.target.result);
+                $('#imgLogo').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function UploadImage(){
+        $('input[type=file]').click();
+    }
+
+    function CreateProduct(){
+         var data = {
+                Article: article,
+                Title : $('#productDetailTitle').val(),
+                Price : parseFloat($('#productDetailPrice').val()).toFixed(2),
+                Description : $('#productDetailDescription').val(),
+                AccessoryType : {
+                    Id : parseInt($('#productDetailType').data('type')),
+                    Title : ''
+                }
+            };
+
+            data = JSON.stringify(data);
+
+            $.ajax({
+          url: `/api/catalogue/product/${article}`,
+          traditional: true,
+          contentType:'application/json; charset=utf-8',
+          type: 'PUT',
+          data : data,
+          dataType: 'json',
+          async: true,
+          success : (function (result) {
+             $('#productDetail').modal('toggle');
+             Filter();
+          }),
+          error: (function (xhr, status) {
+              notyf.error('Произошла ошибка. Попробуйте еще раз.');
+          })
+        });
+    }
+</script>
+}

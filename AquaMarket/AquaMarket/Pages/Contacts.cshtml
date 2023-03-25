@@ -1,0 +1,47 @@
+﻿@page
+@model AquaServer.Pages.ContactsModel
+@{
+    <div class="row mt-5">
+        <div class="m-auto d-flex flex-row justify-content-evenly">
+                <div id="map" style="width: 600px; height: 400px; position:relative"></div>
+                <div class="w-50 mx-xl-5">
+                <h1 class="display-4">Наши контакты</h1>
+                <div class="d-flex flex-column">
+                    <a class="social-icon social-icon--twitter mx-3">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a class="social-icon social-icon--instagram mx-3">
+                        <i class="fa fa-instagram"></i>
+                    </a>
+                    <a class="social-icon social-icon--facebook ms-3">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+<script type="text/javascript">
+
+     $(document).ready(function(){
+         $(".loader").addClass('d-none');
+     });
+
+    function init (){
+         var myMap = new ymaps.Map("map", {
+         center: [54.727541, 55.970214],
+         zoom: 17
+     });
+
+     myMap.geoObjects.add(new ymaps.Placemark([54.727541, 55.970214], {
+            balloonContent: 'Мы ждем вас! :^)',
+            iconCaption: 'AquaМаркет'
+        }, {
+            preset: 'islands#greenDotIconWithCaption'
+        }));
+     }
+
+     ymaps.ready(init);
+</script>
+}

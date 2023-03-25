@@ -1,0 +1,82 @@
+/* Color Variables */
+$color-twitter: #2b97f1;
+$color-instagram: #527fa6;
+$color-facebook: #3b5a9b;
+/* Social Icon Mixin */
+
+&--twitter {
+    @include social-icon($color-twitter);
+}
+
+&--facebook {
+    @include social-icon($color-facebook);
+}
+
+&--instagram {
+    @include social-icon($color-instagram);
+}
+
+footer a {
+    text-decoration:none;
+}
+
+footer a:hover{
+    color: darkorange
+}
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+    color: dimgray;
+}
+
+body {
+    margin-bottom: 60px;
+    color: dimgray;
+}
+
+label {
+    color: dimgray;
+}
+p {
+    color: dimgray;
+}
+
+svg {
+    color: dimgray;
+    width: 1.3rem;
+    height: fit-content;
+}
+
+.grow-ico svg{
+    cursor:pointer
+}
+
+.grow-ico:hover {
+    transform: scale(1.2);
+}
+.card {
+    margin: auto;
+    max-width: 950px;
+    width: 90%;
+    border-radius: 1rem;
+    border: transparent;
+    color: dimgray;
+}
+.summary {
+    background-color: darkorange;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    padding: 4vh;
+    color: white;
+}

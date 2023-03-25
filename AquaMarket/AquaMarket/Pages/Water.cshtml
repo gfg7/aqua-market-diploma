@@ -1,0 +1,193 @@
+﻿@page
+@using AquaServer.Domain.Account.Actions.Helper
+@model AquaServer.Pages.WaterConstructorModel
+@{
+    <div class="card mt-5 d-none">
+        <div class="row">
+            <div class="col-md-8 cart">
+                <h1 class="fs-4 display-4 border-bottom pb-3 pt-3 row ms-5">Формирование заказа питьевой продукции</h1>
+                <div class="mx-5 mb-3 text-start">
+                    <div class="d-flex flex-column">
+                        <p>Вид воды:</p>
+                        <div class="d-flex flex-row justify-content-around">
+                            <select class="form-select form-select-md mb-3 w-50" id="water" onchange="UpdateCost()">
+                            </select>
+                            <label>
+                                Доплата к заказу:
+                                <span style="font-weight: 500;color: darkorange;">
+                                    <span id="priceWater"></span> руб.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <hr class="w-75" />
+                    <div class="d-flex flex-column">
+                        <p>Вид упаковки:</p>
+                        <div class="d-flex flex-row justify-content-around">
+                            <select class="form-select form-select-md mb-3 w-50" id="package" onchange="UpdateCost()">
+                            </select>
+                            <label>
+                                Доплата к заказу:
+                                <span style="font-weight: 500;color: darkorange;">
+                                    <span id="pricePackage"></span> руб.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <hr class="w-75" />
+                    <div class="d-flex flex-row w-50 justify-content-around">
+                        <p>Объем:</p>
+                        <input id="volume" type="number" class="" value="1" step=".05" min="0.20" max="17.00" onchange="UpdateCost()">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <hr class="w-75" />
+                    <div class="d-flex flex-row w-50 justify-content-around">
+                        <p>Количество:</p>
+                        <div class="d-flex justify-content-between">
+                            <div class="d-none de" onclick="DecreaseCount()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle grow-ico " viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
+                                </svg>
+                            </div>
+                            <input id="count" type="text" class="text-center border-0 count" onchange="UpdateCost()" style="color: darkorange;font-weight: 600;width:2rem;align-self: baseline;" disabled value="1">
+                            <div class="inc" onclick="IncreaseCount()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle grow-ico " viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 summary d-flex flex-column justify-content-between" style="text-align:left">
+                <div>
+                    <div class="text-center">
+                        <h5><b>Итог</b></h5>
+                    </div>
+                    <hr style="opacity:1">
+                    <div class="row py-lg-3">
+                        <div class="row">
+                            <div class="col">Стоимость за 1 шт.:</div>
+                            <div class="col"><span id="cost"></span> руб.</div>
+                        </div>
+                        <div class="row py-lg-3">
+                            <div class="col">Итоговая стоимость:</div>
+                            <div class="col text-right"><span id="fullCost"></span> руб.</div>
+                        </div>
+                    </div>
+                </div>
+                @if(User?.IsInRole(AccessRole.Client) is true)
+                {
+                <button class="btn btn-outline btn btn-outline-light" onclick="AddToCart()" style="width: -webkit-fill-available;">Добавить в корзину</button>
+                    
+                }
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+<script type="text/javascript">
+    $(document).ready(function () {
+           $.ajax({
+            url:'/api/market/water',
+            contentType:'application/json; charset=utf-8',
+            type: 'GET',
+             dataType: 'json',
+            async: true,
+            success : (function (result) {
+                $.each(result, function(key, value)
+                {
+               $('#water').append(`<option data-cost=${value.addToCost} value=${value.id}>${value.title}</option>`);
+
+                });
+                $("#water").val(1).change();
+            }),
+            error: (function (xhr, status) {
+                notyf.error(xhr);
+            })
+          });
+
+          $.ajax({
+            url:'/api/market/package',
+            contentType:'application/json; charset=utf-8',
+            type: 'GET',
+             dataType: 'json',
+            async: true,
+            success : (function (result) {
+                $.each(result, function(key, value)
+                {
+               $('#package').append(`<option data-cost=${value.addToCost} value=${value.id}>${value.title}</option>`);
+
+                });
+                $("#package").val(1).change();
+            }),
+            error: (function (xhr, status) {
+                notyf.error(xhr);
+            })
+          });
+          UpdateCost();
+          $('.card').removeClass('d-none');
+      });
+
+      function DecreaseCount(){
+          var count = $('.count').val();
+          if (count<=2){
+              $('.de').addClass('d-none');
+          }
+          $('.count').val(parseInt(count)-1).change();;
+      }
+      
+      function IncreaseCount(){
+          var count = $('.count').val();
+          if (count>=1){
+              $('.de').removeClass('d-none');
+          }
+          $('.count').val(parseInt(count)+1).change();;
+      }
+      
+      function AddToCart(){
+              water= parseInt($('#water').val());
+              package=parseInt($('#package').val());
+              volume=parseFloat($('#volume').val());
+              count=parseInt($('#count').val());
+
+          $.ajax({
+            url:`/api/cart/water?water=${water}&package=${package}&volume=${volume}&count=${count}`,
+            contentType:'application/json; charset=utf-8',
+            type: 'POST',
+            dataType: 'json',
+            traditional:true,
+            async: true,
+            success : (function (result) {
+                 notyf.success("Добавлено в корзину.");
+            }),
+            error: (function (xhr, status) {
+                notyf.error(xhr);
+            })
+          });
+      }
+
+      function UpdateCost(){
+          var water = parseFloat($('#water option:selected').data('cost'));
+          var package = parseFloat($('#package option:selected').data('cost'));
+          var count = parseInt($('#count').val());
+          var volume =parseFloat($('#volume').val()); 
+          console.info(water,package,count,volume);
+          if (volume<1){
+              volume = Math.abs(1-volume);
+          }
+          $('#priceWater').text(water);
+          $('#pricePackage').text(package);
+          var cost = volume*(water+package);
+          $('#cost').text(cost.toFixed(2));
+          $('#fullCost').text((cost*count).toFixed(2));
+      }
+</script>
+}

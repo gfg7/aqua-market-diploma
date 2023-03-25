@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AquaMarket", "AquaMarket\AquaMarket.csproj", "{EB4B5619-F2D0-426C-A2BB-F52B46940583}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AquaMarket_DTO", "..\AquaMarket_DTO\AquaMarket_DTO.csproj", "{D2483888-3C29-44A2-A9F3-9CD3DC28F1C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB4B5619-F2D0-426C-A2BB-F52B46940583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB4B5619-F2D0-426C-A2BB-F52B46940583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB4B5619-F2D0-426C-A2BB-F52B46940583}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB4B5619-F2D0-426C-A2BB-F52B46940583}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2483888-3C29-44A2-A9F3-9CD3DC28F1C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2483888-3C29-44A2-A9F3-9CD3DC28F1C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2483888-3C29-44A2-A9F3-9CD3DC28F1C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2483888-3C29-44A2-A9F3-9CD3DC28F1C4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EDEB6488-4156-42D2-BA28-DF38BF53030A}
+	EndGlobalSection
+EndGlobal

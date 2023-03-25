@@ -1,0 +1,18 @@
+﻿@using AquaMarket_DTO
+@model AuthForm
+@{
+     <form method="post" asp-page-handler="In" asp-page="/Auth" asp-anti-forgery="true" id="login">
+      <!-- Email input -->
+      <div class="form-outline mb-4">
+      <input type="email" asp-for="Email" name="Email" class="form-control" placeholder="Email" />
+      </div>
+
+      <!-- Password input -->
+      <div class="form-outline mb-4">
+        <input type="password" asp-for="Password" class="form-control" placeholder="Пароль"/>
+      </div>
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-outline-primary btn-block mb-4">Войти</button>
+    </form>
+}
